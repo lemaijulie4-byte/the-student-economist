@@ -39,26 +39,67 @@ function SubmitPage() {
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+const [submitError, setSubmitError] = useState("");
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const result = schema.safeParse(form);
-    if (!result.success) {
-      const next: FieldErrors = {};
-      for (const issue of result.error.issues) {
-        const key = issue.path[0] as keyof FormState;
-        if (!next[key]) next[key] = issue.message;
-      }
-      setErrors(next);
-      return;
+
+async function onSubmit(e: React.FormEvent) {
+  e.preventDefault();
+
+  if (isSubmitting) return;
+
+  const result = schema.safeParse(form);
+
+  if (!result.success) {
+    const next: FieldErrors = {};
+
+    for (const issue of result.error.issues) {
+      const key = issue.path[0] as keyof FormState;
+      if (!next[key]) next[key] = issue.message;
     }
-    setErrors({});
-    setSubmitted(true);
+
+    setErrors(next);
+    return;
   }
+
+  setErrors({});
+  setSubmitError("");
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch(
+      "https://formspree.io/f/xaeoqolo",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          ...result.data,
+          _subject: `New Student Economist pitch: ${result.data.title}`,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Submission failed");
+    }
+
+    setSubmitted(true);
+  } catch {
+    setSubmitError(
+      "Your pitch could not be sent. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+}
+
 
   if (submitted) {
     return (
@@ -66,8 +107,7 @@ function SubmitPage() {
         <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-muted">Filed</p>
         <h1 className="mt-6 font-display text-5xl md:text-6xl italic">Thank you, {form.name.split(" ")[0]}.</h1>
         <p className="mt-6 max-w-xl mx-auto font-serif text-lg text-ink-muted leading-relaxed">
-          Your pitch is with the {form.category} desk. An editor will reply within two weeks. In the meantime, read what other students are writing.
-        </p>
+Your pitch has been received by The Student Economist editorial team. We will review your submission and contact you if we would like to take it forward.        </p>
         <a href="/" className="mt-10 inline-block bg-ink text-paper px-8 py-3 font-sans uppercase tracking-[0.2em] text-xs hover:bg-accent transition-colors">
           Return to the front page
         </a>
@@ -163,12 +203,23 @@ function SubmitPage() {
           <p className="font-mono text-[10px] uppercase tracking-widest text-ink-muted max-w-xs">
             By submitting, you confirm the work is your own and unpublished elsewhere.
           </p>
-          <button
-            type="submit"
-            className="bg-ink text-paper px-10 py-4 font-sans uppercase tracking-[0.2em] text-xs hover:bg-accent transition-colors"
-          >
-            File pitch
-          </button>
+          
+<div>
+  {submitError && (
+    <p role="alert" className="mb-3 text-sm text-red-600">
+      {submitError}
+    </p>
+  )}
+
+  <button
+    type="submit"
+    disabled={isSubmitting}
+    className="bg-ink text-paper px-10 py-4 font-sans uppercase tracking-[0.2em] text-xs hover:bg-accent transition-colors disabled:opacity-50"
+  >
+    {isSubmitting ? "Sending..." : "File pitch"}
+  </button>
+</div>
+
         </div>
       </form>
 

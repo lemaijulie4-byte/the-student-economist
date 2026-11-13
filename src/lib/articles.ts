@@ -24,16 +24,14 @@ export const ARTICLES: Article[] = [
   
 {
   slug: "test-article-student-economist",
-  title: "Testing the Student Economist Publishing System",
-  dek: "A temporary article to test how new content appears on the website.",
+title: "UPDATED: Testing the Student Economist Publishing System",  dek: "A temporary article to test how new content appears on the website.",
   category: "markets",
   readMinutes: 2,
   author: "Editorial Team",
   affiliation: "The Student Economist",
   publishedAt: "2026-11-13",
   body: [
-    "This is a test article created to check the publishing process.",
-    "We are testing how articles appear on the homepage, category pages, and individual article pages.",
+"This article has been edited successfully.",    "We are testing how articles appear on the homepage, category pages, and individual article pages.",
     "If everything displays correctly, the website is ready for future editorial content."
   ],
 },
