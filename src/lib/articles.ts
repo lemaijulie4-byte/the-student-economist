@@ -21,6 +21,8 @@ export interface Article {
 }
 
 export const ARTICLES: Article[] = [
+  
+
   {
     slug: "algorithmic-commons-central-banks-ai",
     title: "The Algorithmic Commons: Why Central Banks are Betting on Artificial Intelligence",
