@@ -128,6 +128,14 @@ function SiteNav() {
         <span className="hidden sm:inline">Worldwide</span>
       </div>
       <div className="flex gap-6 md:gap-8 items-center order-3 md:order-2 w-full md:w-auto justify-center">
+        <Link
+  to="/"
+  className="text-xs uppercase font-sans tracking-tight hover:text-accent transition-colors"
+  activeProps={{ className: "text-accent" }}
+  activeOptions={{ exact: true }}
+>
+  Home
+</Link>
         {CATEGORIES.map((c) => (
           <Link
             key={c.slug}
